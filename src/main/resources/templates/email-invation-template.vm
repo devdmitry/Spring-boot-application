@@ -1,0 +1,8 @@
+<html>
+    <head></head>
+        <body>
+        <h3> Use this link for complete profile ! </h3>
+        <br>
+        <a href="http://localhost:8075/public/complete-profile.html?token=${token}">COMPLETE PROFILE</a>
+    </body>
+</html>

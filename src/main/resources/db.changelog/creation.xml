@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog/1.9"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog/1.9
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-1.9.xsd">
+
+
+    
+    <changeSet id="0.0.1.9" author="OSDB">
+        <createTable tableName="employee_position">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="VARCHAR(64)">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    
+    <changeSet id="0.0.2.0" author="OSDB">
+        <createTable tableName="user">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" unique="true" primaryKey="true"/>
+            </column>
+            <column name="email" type="VARCHAR(256)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="password" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="reset_token" type="TEXT"/>
+            <column name="verification_token" type="TEXT"/>
+            <column name="is_verified" type="BOOLEAN" defaultValue="false"/>
+            <column name="role" type="VARCHAR(25)" defaultValue="USER"/>
+            <column name="created_date" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_date" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_deleted" type="BOOLEAN" defaultValue="false">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <createTable tableName="user_profile">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" unique="true" primaryKey="true"/>
+            </column>
+            <column name="name" type="VARCHAR(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="position_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint baseTableName="user_profile"
+                                 baseColumnNames="position_id"
+                                 constraintName="fk_profile_position_id"
+                                 referencedTableName="employee_position"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+    <changeSet id="0.0.2.3" author="OSDB">
+        <createTable tableName="company">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints unique="true" nullable="false"/>
+            </column>
+            <column name="description" type="TEXT">
+            </column>
+            <column name="created_date" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_date" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_deleted" type="BOOLEAN" defaultValue="false">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="0.0.2.4" author="OSDB">
+        <createTable tableName="project">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="company_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_project_company" references="company(id)"/>
+            </column>
+            <column name="created_date" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_date" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="0.0.3.0" author="OSDB">
+        <createTable tableName="user_company">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" unique="true"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_user_company_id" references="user(id)"/>
+            </column>
+            <column name="company_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_company_user_id" references="company(id)"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="0.0.3.1" author="OSDB">
+        <addColumn tableName="company">
+            <column name="owner_id" type="BIGINT">
+                <constraints foreignKeyName="fk_company_owner_id" references="user(id)"/>
+            </column>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="0.0.3.2" author="OSDB">
+        <createTable tableName="role">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="VARCHAR(25)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </createTable>
+        <createTable tableName="user_role">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_role_user_id" references="role(id)"/>
+            </column>
+            <column name="role_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_user_role_id" references="user(id)"/>
+            </column>
+        </createTable>
+
+        <dropColumn tableName="user" columnName="role"/>
+    </changeSet>
+
+    <changeSet id="0.0.3.3" author="OSDB">
+        <dropAllForeignKeyConstraints baseTableName="user_role"/>
+    </changeSet>
+    
+    <changeSet id="0.0.3.4" author="OSDB">
+        <createTable tableName="permission">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(60)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </createTable>
+        <createTable tableName="user_project_permission">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_user_project_permission_id"
+                             references="user(id)"/>
+            </column>
+            <column name="project_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_project_user_permission_id"
+                             references="project(id)"/>
+            </column>
+            <column name="permission_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="fk_permission_user_project_id"
+                             references="permission(id)"/>
+            </column>
+        </createTable>
+    </changeSet>
+    
+    <changeSet id="0.0.3.5" author="OSDB">
+        <createTable tableName="task_status">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="VARCHAR(120)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+        </createTable>
+        <createTable tableName="task">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status_id" type="BIGINT">
+                <constraints nullable="false" foreignKeyName="pk_task_status_id" references="task_status(id)"/>
+            </column>
+            <column name="created_date" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_date" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="0.0.3.6" author="OSDB">
+        <addColumn tableName="task">
+            <column name="project_id" type="BIGINT">
+                <constraints foreignKeyName="fk_task_project_id" references="project(id)"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet id="0.0.3.7" author="OSDB">
+        <createTable tableName="task_subscriber">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="task_id" type="BIGINT">
+                <constraints foreignKeyName="fk_user_task_id" references="task(id)"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints foreignKeyName="fk_task_user_id" references="user(id)"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="0.0.3.8" author="OSDB">
+        <createTable tableName="task_checklist">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="task_id" type="BIGINT">
+                <constraints foreignKeyName="fk_checklist_task_id" references="task(id)"/>
+            </column>
+            <column name="value" type="TEXT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="is_done" type="BOOLEAN" defaultValue="false">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+</databaseChangeLog>

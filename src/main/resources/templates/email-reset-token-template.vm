@@ -1,0 +1,8 @@
+<html>
+<head></head>
+<body>
+    <h3> ${name}, use this token for reset yout password ! </h3>
+    <br>
+    <p><b>TOKEN :</b> ${token}</p>
+</body>
+</html>
