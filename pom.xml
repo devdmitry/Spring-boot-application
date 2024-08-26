@@ -13,7 +13,7 @@
         <java.version>11</java.version>
         <spring.boot.parent.version>2.1.6.RELEASE</spring.boot.parent.version>
         <lombok.version>1.18.10</lombok.version>
-        <swagger2.version>2.8.0</swagger2.version>
+        <swagger2.version>2.10.0</swagger2.version>
         <jaxb.version>2.3.0</jaxb.version>
         <liquibase.plugin.version>3.4.1</liquibase.plugin.version>
         <jsonwt.version>0.6.0</jsonwt.version>
